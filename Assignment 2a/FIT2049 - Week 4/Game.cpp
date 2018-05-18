@@ -545,11 +545,9 @@ void Game::Update(float timestep)
 					}
 				}
 			if (m_gameObjects[i]->GetID() == 2) {
-				Vector3 player_position = m_gameObjects[playerid]->GetPosition(); // get the player position
-				float x = initial.x - player_position.x; //get the difference of x for enemy and player
-				float z = initial.z - player_position.z; // get the difference of y for enemy and player
-				float rotation = atan2(-x,z);
-				m_gameObjects[i]->SetYRotation(rotation);
+				Vector3 player_position = m_gameObjects[playerid]->GetPosition() - m_gameObjects[i]->GetPosition(); // get the player position
+				player_position.Normalize();
+				m_gameObjects[i]->SetYRotation(atan2(player_position.x, player_position.z));
 			}
 		}
 	}
