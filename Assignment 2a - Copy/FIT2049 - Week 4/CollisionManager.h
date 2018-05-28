@@ -45,6 +45,7 @@ private:
 	void PlayertoHealth();
 	void PlayertoWarp();
 	void EnemiestoPlayerBullet();
+	void EnemiestoWall();
 
 public:
 	CollisionManager(std::vector<Player*>* m_players,

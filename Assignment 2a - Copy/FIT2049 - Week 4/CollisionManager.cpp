@@ -391,4 +391,58 @@ void CollisionManager::EnemiestoPlayerBullet()
 	}
 }
 
+void CollisionManager::EnemiestoWall()
+{
+	// We'll check each Player against every item box
+	// Note this is not overly efficient, both in readability and runtime performance
+
+	for (unsigned int i = 0; i < m_enemies->size(); i++)
+	{
+		for (unsigned int j = 0; j < m_wall->size(); j++)
+		{
+			// Don't need to store pointer to these objects again but favouring clarity
+			// Can't index into these directly as they're a pointer to a vector. We need to dereference them first
+			Enemy* Enemy = (*m_enemies)[i];
+			Wall* Wall = (*m_wall)[j];
+
+			CBoundingBox EnemyBounds = Enemy->GetBounds();
+			CBoundingBox WallBounds = Wall->GetBounds();
+
+			// Are they colliding this frame?
+			bool isColliding = CheckCollision(EnemyBounds, WallBounds);
+			// Were they colliding last frame?
+			bool wasColliding = ArrayContainsCollision(m_previousCollisions, Enemy, Wall);
+
+			if (isColliding)
+			{
+				// Register the collision
+				AddCollision(Enemy, Wall);
+
+				if (wasColliding)
+				{
+					// We are colliding this frame and we were also colliding last frame - that's a collision stay
+					// Tell the item box a Enemy has collided with it (we could pass it the actual Enemy too if we like)
+					Wall->OnEnemyCollisionStay();
+					Enemy->OnWallCollisionStay(Wall);
+				}
+				else
+				{
+					// We are colliding this frame and we weren't last frame - that's a collision enter
+					Wall->OnEnemyCollisionEnter();
+					Enemy->OnWallCollisionEnter(Wall);
+				}
+			}
+			else
+			{
+				if (wasColliding)
+				{
+					// We aren't colliding this frame but we were last frame - that's a collision exit
+					Wall->OnEnemyCollisionExit();
+					Enemy->OnWallCollisionExit(Wall);
+				}
+			}
+		}
+	}
+}
+
 

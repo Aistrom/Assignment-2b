@@ -112,11 +112,11 @@ bool Game::LoadTextures()
 	return true;
 }
 
-void Game::InitEnemies()
+void Game::InitEnemies(int value)
 {
-	for (int i = 0; i < 50; i++) {
-		for (int j = 0; j < 50; j++) {
-			if (maze[i][j] == 'R') {
+	int i = randomvalue(20, 1);
+	int j = randomvalue(48, 1);
+	if (value == 1) {
 				Enemy* enemy = new Enemy(m_meshManager->GetMesh("Assets/Meshes/enemy.obj"),
 					m_unlitTexturedShader, m_textureManager->GetTexture("Assets/Textures/gradient_redPink.png"),
 					Vector3(i, 0, j), 1);
@@ -128,7 +128,7 @@ void Game::InitEnemies()
 				m_bullet.push_back(bullet);
 				m_gameObjects.push_back(bullet);
 			}
-			else if (maze[i][j] == 'Q') {
+	else if (value == 2) {
 				Enemy* enemy = new Enemy(m_meshManager->GetMesh("Assets/Meshes/enemy.obj"),
 					m_unlitTexturedShader, m_textureManager->GetTexture("Assets/Textures/gradient_redOrange.png"),
 					Vector3(i, 0, j), 2);
@@ -140,7 +140,7 @@ void Game::InitEnemies()
 				m_bullet.push_back(bullet);
 				m_gameObjects.push_back(bullet);
 			}
-			else if (maze[i][j] == 'A') {
+	else if (value == 3) {
 				Enemy* enemy = new Enemy(m_meshManager->GetMesh("Assets/Meshes/enemy.obj"),
 					m_unlitTexturedShader, m_textureManager->GetTexture("Assets/Textures/gradient_redLighter.png"),
 					Vector3(i, 0, j), 3);
@@ -152,7 +152,7 @@ void Game::InitEnemies()
 				m_bullet.push_back(bullet);
 				m_gameObjects.push_back(bullet);
 			}
-			else if (maze[i][j] == 'Y') {
+	else if (value == 4) {
 				Enemy* enemy = new Enemy(m_meshManager->GetMesh("Assets/Meshes/enemy.obj"),
 					m_unlitTexturedShader, m_textureManager->GetTexture("Assets/Textures/gradient_red.png"),
 					Vector3(i, 0, j), 4);
@@ -164,7 +164,7 @@ void Game::InitEnemies()
 				m_bullet.push_back(bullet);
 				m_gameObjects.push_back(bullet);
 			}
-			else if (maze[i][j] == 'Z') {
+	else if (value == 5) {
 				Enemy* enemy = new Enemy(m_meshManager->GetMesh("Assets/Meshes/enemy.obj"),
 					m_unlitTexturedShader, m_textureManager->GetTexture("Assets/Textures/gradient_redDarker.png"),
 					Vector3(i, 0, j), 5);
@@ -176,7 +176,8 @@ void Game::InitEnemies()
 				m_bullet.push_back(bullet);
 				m_gameObjects.push_back(bullet);
 			}
-		}
+	else {
+
 	}
 }
 
@@ -189,14 +190,14 @@ void Game::InitWall()
 				Wall* botwall = new Wall(m_meshManager->GetMesh("Assets/Meshes/wall_tile.obj"),
 					m_unlitTexturedShader,
 					m_textureManager->GetTexture("Assets/Textures/checkerboard.jpg"),
-					botposition);
+					botposition,1);
 				m_gameObjects.push_back(botwall);
 				m_wall.push_back(botwall);
 				Vector3 topposition = Vector3(i, 1, j);
 				Wall* topwall = new Wall(m_meshManager->GetMesh("Assets/Meshes/wall_tile.obj"),
 					m_unlitTexturedShader,
 					m_textureManager->GetTexture("Assets/Textures/checkerboard.jpg"),
-					topposition);
+					topposition,2);
 				m_gameObjects.push_back(topwall);
 				m_wall.push_back(topwall);
 			}
@@ -207,7 +208,7 @@ void Game::InitWall()
 
 void Game::InitGameWorld()
 {
-	
+	EnemiesDefeated = 0;
 	//Create a maze matrix
 	for (int i = 0; i < 50; i++) {
 		for (int j = 0; j < 50; j++) {
@@ -216,9 +217,10 @@ void Game::InitGameWorld()
 	}
 
 	// Random placement of enemies
-	maze[10][10] = 'R';
-	
-	InitEnemies(); //initialize enemies position on the map
+	for (int i = 0; i < 30; i++) {
+		int r = randomvalue(8, 1);
+		InitEnemies(r); //initialize enemies position on the map
+	}
 
 	InitWall();
 	int enemiesstart = m_gameObjects.size();
@@ -280,24 +282,16 @@ void Game::InitGameWorld()
 
 void Game::Update(float timestep)
 {
-	for (unsigned int i = 0; i < m_enemies.size(); i++) {
-		if (m_enemies[i] != NULL) {
-			EnemiesDefeated = 1;
-		}
-
-	}
-	if (m_player->getplayerhealth() > 0 && EnemiesDefeated == m_enemies.size()) {
-		EnemiesDefeated = 0;
+	if (m_player->getplayerhealth() > 0 & EnemiesDefeated != m_enemies.size()) {
 		m_input->BeginUpdate();
 
-		// control what happened if the player step on a specific tile
-		// all tiles that are stepped on by the player regardless of color are disabled and cannot be step on again
+		EnemiesDefeated = 0;
 		for (unsigned int i = 0; i < m_enemies.size(); i++) {
 			if (m_enemies[i] != NULL) {
 				int hp = m_enemies[i]->gethealth();
 				if (hp >= 0) {
 					m_enemies[i]->Update(timestep, m_player->GetPosition());
-					//m_bullet[i]->Update(timestep, m_player->GetPosition(), m_enemies[i]->GetPosition());
+					m_bullet[i]->Update(timestep, m_player->GetPosition(), m_enemies[i]->GetPosition());
 				}
 				else {
 					delete m_enemies[i];
@@ -308,6 +302,9 @@ void Game::Update(float timestep)
 					m_gameObjects[2 * i] = NULL;
 					m_gameObjects[2 * i + 1] = NULL;
 				}
+			}
+			else {
+				EnemiesDefeated += 1;
 			}
 		}
 
@@ -334,6 +331,24 @@ void Game::Update(float timestep)
 
 		m_input->EndUpdate();
 	}
+}
+
+int Game::randomvalue(int max, int min) {
+	int r;
+
+	const unsigned int range = 1 + max - min;
+	const unsigned int buckets = RAND_MAX / range;
+	const unsigned int limit = buckets * range;
+
+	/* Create equal size buckets all in a row, then fire randomly towards
+	* the buckets until you land in one of them. All buckets are equally
+	* likely. If you land off the end of the line of buckets, try again. */
+	do
+	{
+		r = rand();
+	} while (r >= limit);
+
+	return min + (r / buckets);
 }
 
 void Game::Render()

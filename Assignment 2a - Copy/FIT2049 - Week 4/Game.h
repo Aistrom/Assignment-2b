@@ -66,7 +66,7 @@ private:
 
 	// Splitting initialisation up into several steps
 	void InitWall();
-	void InitEnemies();
+	void InitEnemies(int value);
 	bool InitShaders();
 	bool LoadMeshes();
 	bool LoadTextures();
@@ -82,6 +82,7 @@ public:
 	void Render();	//The overall Render method for the game. Here all of the meshes that need to be drawn will be drawn
 
 	int getPlayerhealth() { return m_playerhealth; }
+	int randomvalue(int max, int min);
 	void Shutdown(); //Cleanup everything we initialised
 };
 #endif

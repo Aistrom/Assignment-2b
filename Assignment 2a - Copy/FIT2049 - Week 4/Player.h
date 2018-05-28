@@ -52,6 +52,8 @@ public:
 	int GetID() { return m_ID; };
 	int getplayerhealth() { return m_health; }
 
+	Vector3 stay;
+
 	CBoundingBox GetBounds() { return m_boundingBox; }
 };
 #endif // !PLAYER_H

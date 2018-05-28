@@ -10,7 +10,7 @@ Player::Player(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position, I
 
 	m_frictionAmount = 0.08f;
 
-	m_boundingBox = CBoundingBox(m_position + Vector3(0, 0, 0), m_position + Vector3(1,1.5,1));
+	m_boundingBox = CBoundingBox(m_position + Vector3(0, 0, 0), m_position + Vector3(1,1,1));
 };
 
 void Player::Update(float timestep) {
@@ -44,7 +44,7 @@ void Player::Update(float timestep) {
 		m_position = currentPos;
 
 		m_boundingBox.SetMin(m_position + Vector3(0, 0, 0));
-		m_boundingBox.SetMax(m_position + Vector3(1, 1.5, 1));
+		m_boundingBox.SetMax(m_position + Vector3(1, 1, 1));
 
 		PhysicsObject::Update(timestep);
 };
@@ -73,11 +73,12 @@ void Player::OnHealthCollisionExit(Health* other) {
 
 void Player::OnWallCollisionEnter(Wall* other) {
 	OutputDebugString("Player-Wall Collision Enter\n");
-
-	ApplyForce((m_position - other->GetPosition()) * 0.1f);
+	ApplyForce((m_position - other->GetPosition()) * 0.1f) ;
 };
 void Player::OnWallCollisionStay(Wall* other) {
 	OutputDebugString("Player-Wall Collision Stay\n");
+
+
 };
 void Player::OnWallCollisionExit(Wall* other) {
 	OutputDebugString("Player-Wall Collision Exit\n");

@@ -9,7 +9,7 @@ private:
 	CBoundingBox m_boundingBox;
 
 public:
-	Wall(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position);
+	Wall(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position,int id);
 
 	void Update(float timestep);
 
@@ -17,6 +17,10 @@ public:
 	void OnPlayerCollisionEnter();
 	void OnPlayerCollisionStay();
 	void OnPlayerCollisionExit();
+
+	void OnEnemyCollisionEnter();
+	void OnEnemyCollisionStay();
+	void OnEnemyCollisionExit();
 
 };
 

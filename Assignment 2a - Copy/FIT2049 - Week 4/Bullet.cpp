@@ -41,7 +41,7 @@ Bullet::Bullet(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position,in
 	default:
 		break;
 	}
-	m_boundingBox = CBoundingBox(m_position + m_mesh->GetMin(), m_position + m_mesh->GetMax());
+	m_boundingBox = CBoundingBox(m_position + Vector3(0,-1,0), m_position + Vector3(1,1,1));
 	isflying = false;
 	
 };
