@@ -25,6 +25,9 @@
 #include "Warp.h"
 #include "CollisionManager.h"
 
+#include "DirectXTK/SpriteBatch.h"
+#include "DirectXTK/SpriteFont.h"
+
 #include <vector>
 
 class Game
@@ -36,6 +39,10 @@ private:
 	MeshManager* m_meshManager;
 	TextureManager* m_textureManager;
 	CollisionManager* m_collisionManager;
+
+	SpriteBatch* m_spriteBatch;
+	SpriteFont* m_arialFont12;
+	SpriteFont* m_arialFont18;
 
 	Shader* m_unlitVertexColouredShader;
 	Shader* m_unlitTexturedShader;
@@ -49,6 +56,7 @@ private:
 	int m_playerhealth; // player current health
 	int enemiesstart;
 	int EnemiesDefeated; // number of enemies defeated
+	int m_healthposition;
 
 
 	std::vector<GameObject*> m_gameObjects;
@@ -59,9 +67,7 @@ private:
 	std::vector<Warp*> m_warp;
 	std::vector<Bullet*> m_bullet;
 	std::vector<PlayerBullet*> m_Playerbullet;
-	std::vector<bool> m_enemyexist;
-	std::vector<bool> m_bulletexist;
-	std::vector<bool> m_healthexist;
+
 
 
 	// Splitting initialisation up into several steps

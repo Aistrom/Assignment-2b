@@ -114,6 +114,7 @@
     <ClInclude Include="PhysicsObject.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerBullet.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TexturedShader.h" />
@@ -128,6 +129,9 @@
     <None Include="Assets\Shaders\VertexColourPixelShader.ps" />
     <None Include="Assets\Shaders\VertexShader.vs" />
     <None Include="DirectXTK\SimpleMath.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FIT2096 - Week 4 Base.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

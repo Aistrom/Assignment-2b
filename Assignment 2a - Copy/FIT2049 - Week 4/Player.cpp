@@ -10,7 +10,7 @@ Player::Player(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position, I
 
 	m_frictionAmount = 0.08f;
 
-	m_boundingBox = CBoundingBox(m_position + Vector3(0, 0, 0), m_position + Vector3(1,1,1));
+	m_boundingBox = CBoundingBox(m_position + Vector3(0, 0, 0), m_position + Vector3(1,1.5,1));
 };
 
 void Player::Update(float timestep) {
@@ -44,13 +44,15 @@ void Player::Update(float timestep) {
 		m_position = currentPos;
 
 		m_boundingBox.SetMin(m_position + Vector3(0, 0, 0));
-		m_boundingBox.SetMax(m_position + Vector3(1, 1, 1));
+		m_boundingBox.SetMax(m_position + Vector3(1, 1.5, 1));
 
 		PhysicsObject::Update(timestep);
 };
 
 void Player::OnEnemiesCollisionEnter(Enemy* other) {
 	OutputDebugString("Player-Enemies Collision Enter\n");
+	std::cout << "You collided with the enemy, You Lose";
+	PostQuitMessage(0);
 };
 void Player::OnEnemiesCollisionStay(Enemy* other){
 	OutputDebugString("Player-Enemies Collision Stay\n");
@@ -62,7 +64,9 @@ void Player::OnEnemiesCollisionExit(Enemy* other) {
 
 void Player::OnHealthCollisionEnter(Health* other) {
 	OutputDebugString("Player-Health Collision Enter\n");
-	std::cout << "you heal two damage";
+	m_health += 20;
+	std::cout << m_health;
+	std::cout << "\n";
 };
 void Player::OnHealthCollisionStay(Health* other) {
 	OutputDebugString("Player-Health Collision Stay\n");

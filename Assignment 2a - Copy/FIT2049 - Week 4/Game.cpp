@@ -265,7 +265,7 @@ void Game::InitGameWorld()
 	m_gameObjects.back()->SetUniformScale(0.5f);
 	m_gameObjects.back()->SetPosition(m_gameObjects.back()->GetPosition() + Vector3(0, 1.5f, 0));
 
-	m_healthexist.push_back(true);
+	m_healthposition = m_gameObjects.size();
 
 	// Loop to put the game object based on the maze matrix that are previously created 
 	// Also, put its position in the game object array on maze2 matrix similiar to maze for easy access
@@ -282,7 +282,6 @@ void Game::InitGameWorld()
 
 void Game::Update(float timestep)
 {
-	if (m_player->getplayerhealth() > 0 & EnemiesDefeated != m_enemies.size()) {
 		m_input->BeginUpdate();
 
 		EnemiesDefeated = 0;
@@ -308,6 +307,12 @@ void Game::Update(float timestep)
 			}
 		}
 
+		if (!m_health.back()->GetExistence()) {
+			m_health.back()->SetExistence(true);
+			delete m_gameObjects[m_healthposition - 1];
+			m_gameObjects[m_healthposition - 1] = NULL;
+		}
+
 		for (unsigned int i = 0; i < m_gameObjects.size(); i++)
 		{
 			if (m_gameObjects[i] != NULL) {
@@ -330,6 +335,15 @@ void Game::Update(float timestep)
 
 
 		m_input->EndUpdate();
+
+	if (m_player->getplayerhealth() < 0) {
+		std::cout << "Your health is zero, You Lose";
+		PostQuitMessage(0);
+	}
+	if (EnemiesDefeated == m_enemies.size())
+	{
+		std::cout << "You defeated all the enemy, You Win";
+		PostQuitMessage(0);
 	}
 }
 
@@ -402,5 +416,22 @@ void Game::Shutdown()
 		m_textureManager = NULL;
 	}
 
+	if (m_spriteBatch)
+	{
+		delete m_spriteBatch;
+		m_spriteBatch = NULL;
+	}
+
+	if (m_arialFont12)
+	{
+		delete m_arialFont12;
+		m_arialFont12 = NULL;
+	}
+
+	if (m_arialFont18)
+	{
+		delete m_arialFont18;
+		m_arialFont18 = NULL;
+	}
 }
 

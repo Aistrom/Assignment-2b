@@ -209,6 +209,9 @@
     <ClInclude Include="TimeKeeper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTK\SimpleMath.inl">
@@ -223,5 +226,10 @@
     <None Include="Assets\Shaders\TexturedPixelShader.ps">
       <Filter>Resource Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FIT2096 - Week 4 Base.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
