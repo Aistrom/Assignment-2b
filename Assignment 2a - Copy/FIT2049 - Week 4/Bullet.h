@@ -3,20 +3,66 @@
 
 #include "GameObject.h"
 #include "Collisions.h"
+#include "TimeKeeper.h"
 
 class Bullet : public GameObject
 {
 private:
 	CBoundingBox m_boundingBox;
 
+	enum class BulletTypes
+	{
+		BRAVE,
+		SCARED,
+		IGNORANCE,
+		SUPRISED,
+		RANDOM,
+		PLAYER
+	};
+	BulletTypes m_type;
+	float damage;
+	int damagerange;
+
+	int traveltime;
+	int frequency;
+
+	float m_moveSpeed = 10.0f;
+	bool isflying;
+
 public:
-	Bullet(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position);
+	Bullet(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position,int i);
 
 	virtual void Update(float timestep,Vector3 position,Vector3 otherposition);
 
 	void OnPlayerCollisionEnter();
 	void OnPlayerCollisionStay();
 	void OnPlayerCollisionExit();
+
+	BulletTypes getm_type() { return m_type; }
+	BulletTypes taketypes(int i) {
+		switch (i)
+		{
+		case 1:
+			return BulletTypes::BRAVE;
+			break;
+		case 2:
+			return BulletTypes::RANDOM;
+			break;
+		case 3:
+			return BulletTypes::IGNORANCE;
+			break;
+		case 4:
+			return BulletTypes::SUPRISED;
+			break;
+		case 5:
+			return  BulletTypes::SCARED;
+			break;
+		default:
+			break;
+		}
+	}
+
+	unsigned int getdamage();
 
 	CBoundingBox GetBounds() { return m_boundingBox; }
 };

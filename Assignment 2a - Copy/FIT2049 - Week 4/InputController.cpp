@@ -72,7 +72,6 @@ bool InputController::GetKeyDown(UINT keyCode)
 	return !m_PrevKeys[keyCode] && m_CurrentKeys[keyCode];
 }
 
-//Read access violation error
 bool InputController::GetKeyHold(UINT keyCode)
 {
 	return m_CurrentKeys[keyCode];

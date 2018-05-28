@@ -26,7 +26,7 @@ Camera::Camera(InputController* Input)
 {
 	//Set up a "default" camera!
 	m_position = Vector3(1.0f, 1.5f, 1.0f);
-	m_lookAtTarget = Vector3(1.0f, 1.5f, 2.0f);
+	m_lookAtTarget = Vector3(1.0f, 1.5f, 25.0f);
 	m_up = Vector3::Up;
 
 	m_aspectRatio = 1280.0f / 720.0f;

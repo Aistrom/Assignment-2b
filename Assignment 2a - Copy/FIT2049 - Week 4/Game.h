@@ -20,7 +20,9 @@
 #include "Enemy.h"
 #include "Health.h"
 #include "Bullet.h"
+#include "PlayerBullet.h"
 #include "Wall.h"
+#include "Warp.h"
 #include "CollisionManager.h"
 
 #include <vector>
@@ -40,23 +42,31 @@ private:
 
 	Player* m_player;
 
+	int w;
+
 	char maze[12][12]; // maze matrix to store the placement of the gameobject on the worldspace 
 	int maze2[12][12]; // maze2 matrix to store the placement of the game object in its array based on maze matrix
 	int m_playerhealth; // player current health
+	int enemiesstart;
 	int EnemiesDefeated; // number of enemies defeated
 
+
 	std::vector<GameObject*> m_gameObjects;
+	std::vector<Wall*> m_wall;
 	std::vector<Player*> m_players;
 	std::vector<Health*> m_health;
 	std::vector<Enemy*> m_enemies;
-	std::vector<Wall*> m_wall;
+	std::vector<Warp*> m_warp;
 	std::vector<Bullet*> m_bullet;
+	std::vector<PlayerBullet*> m_Playerbullet;
+	std::vector<bool> m_enemyexist;
+	std::vector<bool> m_bulletexist;
+	std::vector<bool> m_healthexist;
 
 
 	// Splitting initialisation up into several steps
 	void InitWall();
 	void InitEnemies();
-	//void InitBullet();
 	bool InitShaders();
 	bool LoadMeshes();
 	bool LoadTextures();

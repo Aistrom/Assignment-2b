@@ -44,14 +44,13 @@ void Player::Update(float timestep) {
 		m_position = currentPos;
 
 		m_boundingBox.SetMin(m_position + Vector3(0, 0, 0));
-		m_boundingBox.SetMax(m_position + Vector3(1, 1, 1));
+		m_boundingBox.SetMax(m_position + Vector3(1, 1.5, 1));
 
 		PhysicsObject::Update(timestep);
 };
 
 void Player::OnEnemiesCollisionEnter(Enemy* other) {
 	OutputDebugString("Player-Enemies Collision Enter\n");
-	std::cout << "you received two damage";
 };
 void Player::OnEnemiesCollisionStay(Enemy* other){
 	OutputDebugString("Player-Enemies Collision Stay\n");
@@ -85,7 +84,9 @@ void Player::OnWallCollisionExit(Wall* other) {
 };
 
 void Player::OnBulletCollisionEnter(Bullet* other) {
-	std::cout << "you received one damage";
+	m_health -= other->getdamage();
+	std::cout << m_health;
+	std::cout << "\n";
 	OutputDebugString("Player-Bullet Collision Enter\n");
 };
 void Player::OnBulletCollisionStay(Bullet* other) {
@@ -93,4 +94,16 @@ void Player::OnBulletCollisionStay(Bullet* other) {
 };
 void Player::OnBulletCollisionExit(Bullet* other) {
 	OutputDebugString("Player-Bullet Collision Exit\n");
+};
+
+
+void Player::OnWarpCollisionEnter(Warp* other, Vector3 position) {
+	OutputDebugString("Player-Warp Collision Enter\n");
+	SetPosition(position + Vector3(-1, 0, 0));
+};
+void Player::OnWarpCollisionStay(Warp* other, Vector3 position) {
+	OutputDebugString("Player-Warp Collision Stay\n");
+};
+void Player::OnWarpCollisionExit(Warp* other, Vector3 position) {
+	OutputDebugString("Player-Warp Collision Exit\n");
 };

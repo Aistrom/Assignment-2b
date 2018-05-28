@@ -1,12 +1,14 @@
 #include "CollisionManager.h"
 
-CollisionManager::CollisionManager(std::vector<Player*>* players,std::vector<Health*>* health,std::vector<Enemy*>* enemies,std::vector<Wall*>* walls,std::vector<Bullet*>* bullets) 
+CollisionManager::CollisionManager(std::vector<Player*>* players,std::vector<Health*>* health,std::vector<Enemy*>* enemies,std::vector<Wall*>* walls,std::vector<Bullet*>* bullets, std::vector<Warp*>* warps, std::vector<PlayerBullet*>* playerbullet)
 {
 	m_players = players;
 	m_wall = walls;
 	m_enemies = enemies;
 	m_health = health;
 	m_bullet = bullets;
+	m_warp = warps;
+	m_playerbullet = playerbullet;
 
 	memset(m_currentCollisions, 0, sizeof(m_currentCollisions));
 	memset(m_previousCollisions, 0, sizeof(m_previousCollisions));
@@ -21,6 +23,8 @@ void CollisionManager::CheckCollisions()
 	PlayertoEnemies();
 	PlayertoHealth();
 	PlayertoWall();
+	PlayertoWarp();
+	EnemiestoPlayerBullet();
 
 	// Move all current collisions into previous
 	memcpy(m_previousCollisions, m_currentCollisions, sizeof(m_currentCollisions));
@@ -129,37 +133,39 @@ void CollisionManager::PlayertoEnemies()
 			Player* Player = (*m_players)[i];
 			Enemy* Enemy = (*m_enemies)[j];
 
-			CBoundingBox PlayerBounds = Player->GetBounds();
-			CBoundingBox EnemyBounds = Enemy->GetBounds();
+			if (Enemy != NULL) {
+				CBoundingBox PlayerBounds = Player->GetBounds();
+				CBoundingBox EnemyBounds = Enemy->GetBounds();
 
-			// Are they colliding this frame?
-			bool isColliding = CheckCollision(PlayerBounds, EnemyBounds);
-			// Were they colliding last frame?
-			bool wasColliding = ArrayContainsCollision(m_previousCollisions, Player, Enemy);
+				// Are they colliding this frame?
+				bool isColliding = CheckCollision(PlayerBounds, EnemyBounds);
+				// Were they colliding last frame?
+				bool wasColliding = ArrayContainsCollision(m_previousCollisions, Player, Enemy);
 
-			if (isColliding)
-			{
-				// Register the collision
-				AddCollision(Player, Enemy);
-
-				if (wasColliding)
+				if (isColliding)
 				{
-					// We are colliding this frame and we were also colliding last frame - that's a collision stay
-					// Tell the item box a Player has collided with it (we could pass it the actual Player too if we like)
-					Player->OnEnemiesCollisionStay(Enemy);
+					// Register the collision
+					AddCollision(Player, Enemy);
+
+					if (wasColliding)
+					{
+						// We are colliding this frame and we were also colliding last frame - that's a collision stay
+						// Tell the item box a Player has collided with it (we could pass it the actual Player too if we like)
+						Player->OnEnemiesCollisionStay(Enemy);
+					}
+					else
+					{
+						// We are colliding this frame and we weren't last frame - that's a collision enter
+						Player->OnEnemiesCollisionEnter(Enemy);
+					}
 				}
 				else
 				{
-					// We are colliding this frame and we weren't last frame - that's a collision enter
-					Player->OnEnemiesCollisionEnter(Enemy);
-				}
-			}
-			else
-			{
-				if (wasColliding)
-				{
-					// We aren't colliding this frame but we were last frame - that's a collision exit
-					Player->OnEnemiesCollisionExit(Enemy);
+					if (wasColliding)
+					{
+						// We aren't colliding this frame but we were last frame - that's a collision exit
+						Player->OnEnemiesCollisionExit(Enemy);
+					}
 				}
 			}
 		}
@@ -234,31 +240,86 @@ void CollisionManager::PlayertoBullet()
 			Player* Player = (*m_players)[i];
 			Bullet* bullet = (*m_bullet)[j];
 
+			if (bullet != NULL) {
+				CBoundingBox PlayerBounds = Player->GetBounds();
+				CBoundingBox bulletBounds = bullet->GetBounds();
+
+				// Are they colliding this frame?
+				bool isColliding = CheckCollision(PlayerBounds, bulletBounds);
+				// Were they colliding last frame?
+				bool wasColliding = ArrayContainsCollision(m_previousCollisions, Player, bullet);
+
+				if (isColliding)
+				{
+					// Register the collision
+					AddCollision(Player, bullet);
+
+					if (wasColliding)
+					{
+						// We are colliding this frame and we were also colliding last frame - that's a collision stay
+						// Tell the item box a Player has collided with it (we could pass it the actual Player too if we like)
+						bullet->OnPlayerCollisionStay();
+						Player->OnBulletCollisionStay(bullet);
+					}
+					else
+					{
+						// We are colliding this frame and we weren't last frame - that's a collision enter
+						bullet->OnPlayerCollisionEnter();
+						Player->OnBulletCollisionEnter(bullet);
+					}
+				}
+				else
+				{
+					if (wasColliding)
+					{
+						// We aren't colliding this frame but we were last frame - that's a collision exit
+						bullet->OnPlayerCollisionExit();
+						Player->OnBulletCollisionExit(bullet);
+					}
+				}
+			}
+		}
+	}
+}
+
+void CollisionManager::PlayertoWarp()
+{
+	// We'll check each Player against every item box
+	// Note this is not overly efficient, both in readability and runtime performance
+
+	for (unsigned int i = 0; i < m_players->size(); i++)
+	{
+		for (unsigned int j = 0; j < m_warp->size(); j++)
+		{
+			// Don't need to store pointer to these objects again but favouring clarity
+			// Can't index into these directly as they're a pointer to a vector. We need to dereference them first
+			Player* Player = (*m_players)[i];
+			Warp* Warp = (*m_warp)[j];
+
 			CBoundingBox PlayerBounds = Player->GetBounds();
-			CBoundingBox bulletBounds = bullet->GetBounds();
+			CBoundingBox WarpBounds = Warp->GetBounds();
 
 			// Are they colliding this frame?
-			bool isColliding = CheckCollision(PlayerBounds, bulletBounds);
+			bool isColliding = CheckCollision(PlayerBounds, WarpBounds);
 			// Were they colliding last frame?
-			bool wasColliding = ArrayContainsCollision(m_previousCollisions, Player, bullet);
-
+			bool wasColliding = ArrayContainsCollision(m_previousCollisions, Player, Warp);
 			if (isColliding)
 			{
 				// Register the collision
-				AddCollision(Player, bullet);
+				AddCollision(Player, Warp);
 
 				if (wasColliding)
 				{
 					// We are colliding this frame and we were also colliding last frame - that's a collision stay
 					// Tell the item box a Player has collided with it (we could pass it the actual Player too if we like)
-					bullet->OnPlayerCollisionStay();
-					Player->OnBulletCollisionStay(bullet);
+					Warp->OnPlayerCollisionStay();
+					Player->OnWarpCollisionStay(Warp,(*m_warp)[1-j]->GetPosition());
 				}
 				else
 				{
 					// We are colliding this frame and we weren't last frame - that's a collision enter
-					bullet->OnPlayerCollisionEnter();
-					Player->OnBulletCollisionEnter(bullet);
+					Warp->OnPlayerCollisionEnter();
+					Player->OnWarpCollisionEnter(Warp, (*m_warp)[1 - j]->GetPosition());
 				}
 			}
 			else
@@ -266,11 +327,68 @@ void CollisionManager::PlayertoBullet()
 				if (wasColliding)
 				{
 					// We aren't colliding this frame but we were last frame - that's a collision exit
-					bullet->OnPlayerCollisionExit();
-					Player->OnBulletCollisionExit(bullet);
+					Warp->OnPlayerCollisionExit();
+					Player->OnWarpCollisionExit(Warp, (*m_warp)[1 - j]->GetPosition());
 				}
 			}
 		}
 	}
 }
+
+void CollisionManager::EnemiestoPlayerBullet()
+{
+	// We'll check each Player against every item box
+	// Note this is not overly efficient, both in readability and runtime performance
+
+	for (unsigned int i = 0; i < m_playerbullet->size(); i++)
+	{
+		for (unsigned int j = 0; j < m_enemies->size(); j++)
+		{
+			// Don't need to store pointer to these objects again but favouring clarity
+			// Can't index into these directly as they're a pointer to a vector. We need to dereference them first
+			PlayerBullet* PlayerBullet = (*m_playerbullet)[i];
+			Enemy* Enemies = (*m_enemies)[j];
+
+			if (Enemies != NULL) {
+				CBoundingBox PlayerBulletBounds = PlayerBullet->GetBounds();
+				CBoundingBox EnemiesBounds = Enemies->GetBounds();
+
+				// Are they colliding this frame?
+				bool isColliding = CheckCollision(PlayerBulletBounds, EnemiesBounds);
+				// Were they colliding last frame?
+				bool wasColliding = ArrayContainsCollision(m_previousCollisions, PlayerBullet, Enemies);
+				if (isColliding)
+				{
+
+					// Register the collision
+					AddCollision(PlayerBullet, Enemies);
+
+					if (wasColliding)
+					{
+						// We are colliding this frame and we were also colliding last frame - that's a collision stay
+						// Tell the item box a PlayerBullet has collided with it (we could pass it the actual PlayerBullet too if we like)
+						Enemies->OnPlayerBulletCollisionStay();
+						PlayerBullet->OnEnemiesCollisionStay();
+					}
+					else
+					{
+						// We are colliding this frame and we weren't last frame - that's a collision enter
+						Enemies->OnPlayerBulletCollisionEnter(PlayerBullet->getdamage());
+						PlayerBullet->OnEnemiesCollisionEnter();
+					}
+				}
+				else
+				{
+					if (wasColliding)
+					{
+						// We aren't colliding this frame but we were last frame - that's a collision exit
+						Enemies->OnPlayerBulletCollisionExit();
+						PlayerBullet->OnEnemiesCollisionExit();
+					}
+				}
+			}
+		}
+	}
+}
+
 

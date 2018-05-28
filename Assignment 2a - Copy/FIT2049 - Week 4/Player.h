@@ -7,6 +7,7 @@
 #include "Wall.h"
 #include "Bullet.h"
 #include "Health.h"
+#include "Warp.h"
 #include "PhysicsObject.h"
 
 class Player : public PhysicsObject
@@ -14,6 +15,7 @@ class Player : public PhysicsObject
 private:
 	float m_moveSpeed;
 	int m_ID;
+	float m_health = 50;
 protected:
 	InputController * m_input;
 
@@ -43,7 +45,12 @@ public:
 	void OnBulletCollisionStay(Bullet* other);
 	void OnBulletCollisionExit(Bullet* other);
 
+	void OnWarpCollisionEnter(Warp* other, Vector3 position);
+	void OnWarpCollisionStay(Warp* other, Vector3 position);
+	void OnWarpCollisionExit(Warp* other, Vector3 position);
+
 	int GetID() { return m_ID; };
+	int getplayerhealth() { return m_health; }
 
 	CBoundingBox GetBounds() { return m_boundingBox; }
 };

@@ -9,6 +9,7 @@
 #include "Enemy.h"
 #include "Wall.h"
 #include "Bullet.h"
+#include "PlayerBullet.h"
 
 #define MAX_ALLOWED_COLLISIONS 2048
 
@@ -20,6 +21,8 @@ private:
 	std::vector<Enemy*>* m_enemies;
 	std::vector<Wall*>* m_wall;
 	std::vector<Bullet*>* m_bullet;
+	std::vector<Warp*>* m_warp;
+	std::vector<PlayerBullet*>* m_playerbullet;
 
 
 	GameObject* m_currentCollisions[MAX_ALLOWED_COLLISIONS];
@@ -40,13 +43,17 @@ private:
 	void PlayertoWall();
 	void PlayertoBullet();
 	void PlayertoHealth();
+	void PlayertoWarp();
+	void EnemiestoPlayerBullet();
 
 public:
 	CollisionManager(std::vector<Player*>* m_players,
 	std::vector<Health*>* m_health, 
 	std::vector<Enemy*>* m_enemies,
 	std::vector<Wall*>* m_wall,
-	std::vector<Bullet*>* m_bullet);
+	std::vector<Bullet*>* m_bullet, 
+	std::vector<Warp*>* m_warp,
+	std::vector<PlayerBullet*>* m_playerbullet);
 	void CheckCollisions();
 
 };

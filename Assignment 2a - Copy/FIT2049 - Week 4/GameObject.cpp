@@ -98,7 +98,7 @@ void GameObject::Update(float timestep)
 
 void GameObject::Render(Direct3D* renderer, Camera* cam)
 {
-	if (m_mesh)
+	if (m_mesh != NULL)
 	{
 		m_world = Matrix::CreateScale(m_scaleX, m_scaleY, m_scaleZ) * Matrix::CreateFromYawPitchRoll(m_rotY, m_rotX, m_rotZ) * Matrix::CreateTranslation(m_position);
 		m_mesh->Render(renderer, m_shader, m_world, cam, m_texture);

@@ -5,6 +5,8 @@
  */
 
 #include "Window.h"
+#include "TimeKeeper.h"
+#include "Player.h"
 
 #include <iostream>
 
@@ -113,7 +115,6 @@ bool Window::Initialise()
 
 	//Create an Input Controller
 	m_input = new InputController(m_windowHandle);
-
 	//We create our Game object and initialise it
 	m_game = new Game();
 	if (!m_game->Initialise(m_renderer, m_input))
@@ -182,6 +183,7 @@ void Window::Start()
 			{
 				framesSimulated++;
 				m_game->Update(timeStep);
+				TimeKeeper::Update(timeStep);
 
 				timeBank -= timeStep;
 			}

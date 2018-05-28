@@ -11,6 +11,7 @@ private:
 	CBoundingBox m_boundingBox;
 
 	float m_moveSpeed;
+	float m_health;
 
 	enum class EnemyTypes
 	{
@@ -26,6 +27,13 @@ public:
 
 	virtual void Update(float timestep,Vector3 position);
 
+	void OnPlayerBulletCollisionEnter(int damage);
+	void OnPlayerBulletCollisionStay();
+	void OnPlayerBulletCollisionExit();
+
+
+
+	float gethealth() { return m_health; }
 	EnemyTypes GetTypes() { return m_type; }
 	CBoundingBox GetBounds() { return m_boundingBox; }
 };

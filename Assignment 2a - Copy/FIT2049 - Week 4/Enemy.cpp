@@ -7,23 +7,28 @@ Enemy::Enemy(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position,int 
 	{
 	case 1:
 		m_type = EnemyTypes::BRAVE;
-		m_moveSpeed = 2.0f;
+		m_moveSpeed = 0.0f;
+		m_health = 10;
 		break;
 	case 2:
 		m_type = EnemyTypes::RANDOM;
-		m_moveSpeed = 3.0f;
+		m_moveSpeed = 0.0f;
+		m_health = 10;
 		break;
 	case 3:
 		m_type = EnemyTypes::IGNORANCE;
-		m_moveSpeed = 1.0f;
+		m_moveSpeed = 0.0f;
+		m_health = 10;
 		break;
 	case 4:
 		m_type = EnemyTypes::SUPRISED;
-		m_moveSpeed = 3.0f;
+		m_moveSpeed = 0.0f;
+		m_health = 10;
 		break;
 	case 5:
 		m_type = EnemyTypes::SCARED;
-		m_moveSpeed = 5.0f;
+		m_moveSpeed = 0.0f;
+		m_health = 10;
 		break;
 	default:
 		break;
@@ -35,8 +40,6 @@ void Enemy::Update(float timestep,Vector3 Position) {
 	Vector3 player_position = Position - this->GetPosition(); // get the player position
 	player_position.Normalize();
 	this -> SetYRotation(atan2(player_position.x, player_position.z));
-
-	
 
 	Matrix heading = Matrix::CreateRotationY(atan2(player_position.x, player_position.z));
 
@@ -50,6 +53,18 @@ void Enemy::Update(float timestep,Vector3 Position) {
 
 	SetPosition(currentPos);
 
-	m_boundingBox.SetMin(m_position + Vector3(0, 0, 0));
-	m_boundingBox.SetMax(m_position + Vector3(1, 1, 1));
+	m_boundingBox.SetMin(m_position + m_mesh->GetMin());
+	m_boundingBox.SetMax(m_position + m_mesh->GetMax());
+	
+};
+
+void Enemy::OnPlayerBulletCollisionEnter(int damage) {
+	m_health -= damage;
+	std::cout << m_health;
+};
+void Enemy::OnPlayerBulletCollisionStay() {
+
+};
+void Enemy::OnPlayerBulletCollisionExit() {
+
 };
