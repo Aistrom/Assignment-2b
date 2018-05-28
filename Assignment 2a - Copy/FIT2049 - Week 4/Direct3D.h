@@ -20,6 +20,10 @@
 #pragma comment(lib, "DirectXTK_VS2015.lib")
 #endif
 
+#if defined(_MSC_VER) && (_MSC_VER == 1913)
+#pragma comment(lib, "DirectXTK_VS2017.lib")
+#endif
+
 #include <dxgi.h>
 #include <d3dcommon.h>
 #include <d3d11.h>

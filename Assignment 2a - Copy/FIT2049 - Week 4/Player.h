@@ -15,7 +15,7 @@ class Player : public PhysicsObject
 private:
 	float m_moveSpeed;
 	int m_ID;
-	float m_health = 50;
+	float m_health = 100;
 protected:
 	InputController * m_input;
 
